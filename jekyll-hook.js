@@ -75,7 +75,12 @@ app.post('/hooks/jekyll/*', function(req, res) {
         if (config.public_repo) {
             params.push('https://' + config.gh_server + '/' + data.owner + '/' + data.repo + '.git');
         } else {
-            params.push('git@' + config.gh_server + ':' + data.owner + '/' + data.repo + '.git');
+            server_name = config.gh_server
+            if (config.per_repo_hostname) {
+                server_name = data.repo + '.' + data.owner + '.' + server_name
+            }
+
+            params.push('git@' + server_name + ':' + data.owner + '/' + data.repo + '.git');
         }
 
         /* source */ params.push(config.temp + '/' + data.owner + '/' + data.repo + '/' + data.branch + '/' + 'code');
@@ -94,7 +99,7 @@ app.post('/hooks/jekyll/*', function(req, res) {
             throw new Error('No default build script defined.');
           }
         }
-        
+
         var publish_script = null;
         try {
           publish_script = config.scripts[data.branch].publish;

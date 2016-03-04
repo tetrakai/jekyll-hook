@@ -1,5 +1,6 @@
 {
     "gh_server": "github.com",
+    "per_repo_hostname": false,
     "temp": "/home/ubuntu/jekyll-hook",
     "public_repo": true,
     "scripts": {
