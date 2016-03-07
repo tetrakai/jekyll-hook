@@ -47,10 +47,17 @@ app.post('/hooks/jekyll/*', function(req, res) {
         var branch = req.params[0];
         var params = [];
 
-        // Parse webhook data for internal variables
-        data.repo = data.repository.name;
-        data.branch = data.ref.replace('refs/heads/', '');
-        data.owner = data.repository.owner.name;
+        // Parse webhook data for internal variables. Ping and push events have
+        // slightly different configs here, so handle those two cases.
+        if (req.headers['x-github-event'] == 'ping') {
+            data.repo = data.repository.name;
+            data.branch = data.repository.default_branch;
+            data.owner = data.repository.owner.login;
+        } else {
+            data.repo = data.repository.name;
+            data.branch = data.ref.replace('refs/heads/', '');
+            data.owner = data.repository.owner.name;
+        }
 
         // End early if not permitted account
         if (config.accounts.indexOf(data.owner) === -1) {
